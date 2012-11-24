@@ -12,7 +12,7 @@ import (
 
 type packet struct {
 	Addr *net.UDPAddr
-	msg
+	msg  Msg
 }
 
 type packets []*packet
@@ -23,7 +23,7 @@ func (p *packets) Len() int {
 
 func (p *packets) Less(i, j int) bool {
 	a := *p
-	return *a[i].Seqn < *a[j].Seqn
+	return *a[i].msg.Seqn < *a[j].msg.Seqn
 }
 
 func (p *packets) Push(x interface{}) {
@@ -119,8 +119,8 @@ type Prop struct {
 	Mut  []byte
 }
 
-var tickTemplate = &msg{Cmd: tick}
-var fillTemplate = &msg{Cmd: propose, Value: []byte(store.Nop)}
+var tickTemplate = &Msg{Cmd: tick}
+var fillTemplate = &Msg{Cmd: propose, Value: []byte(store.Nop)}
 
 func (m *Manager) Run() {
 	m.run = make(map[int64]*run)
@@ -168,13 +168,13 @@ func (m *Manager) Run() {
 func (m *Manager) pump() {
 	for len(m.packet) > 0 {
 		p := m.packet[0]
-		log.Printf("p.seqn=%d m.next=%d", *p.Seqn, m.next)
-		if *p.Seqn >= m.next {
+		log.Printf("p.seqn=%d m.next=%d", *p.msg.Seqn, m.next)
+		if *p.msg.Seqn >= m.next {
 			break
 		}
 		heap.Pop(&m.packet)
 
-		r := m.run[*p.Seqn]
+		r := m.run[*p.msg.Seqn]
 		if r == nil || r.l.done {
 			go sendLearn(m.Out, p, m.Store)
 		} else {
@@ -200,6 +200,7 @@ func (m *Manager) doTick(t int64) {
 func (m *Manager) propose(q heap.Interface, pr *Prop, t int64) {
 	log.Println("prop", pr)
 	p := new(packet)
+	p.msg = Msg{}
 	p.msg.Seqn = &pr.Seqn
 	p.msg.Cmd = propose
 	p.msg.Value = pr.Mut
@@ -215,14 +216,14 @@ func (m *Manager) propose(q heap.Interface, pr *Prop, t int64) {
 }
 
 func sendLearn(out chan<- Packet, p *packet, st *store.Store) {
-	if p.msg.Cmd != nil && *p.msg.Cmd == msg_INVITE {
-		ch, err := st.Wait(store.Any, *p.Seqn)
+	if p.msg.Cmd != nil && *p.msg.Cmd == Msg_INVITE {
+		ch, err := st.Wait(store.Any, *p.msg.Seqn)
 
 		if err == store.ErrTooLate {
 			log.Println(err)
 		} else {
 			e := <-ch
-			m := msg{
+			m := Msg{
 				Seqn:  &e.Seqn,
 				Cmd:   learn,
 				Value: []byte(e.Mut),
@@ -267,7 +268,7 @@ func schedTrigger(q heap.Interface, n, t, tfill int64) {
 	heap.Push(q, trigger{n: n, t: t + tfill})
 }
 
-func applyTriggers(ps *packets, ticks *triggers, now int64, tpl *msg) (n int) {
+func applyTriggers(ps *packets, ticks *triggers, now int64, tpl *Msg) (n int) {
 	for ticks.Len() > 0 {
 		tt := (*ticks)[0]
 		if tt.t > now {
@@ -279,7 +280,7 @@ func applyTriggers(ps *packets, ticks *triggers, now int64, tpl *msg) (n int) {
 		p := new(packet)
 		p.msg = *tpl
 		p.msg.Seqn = &tt.n
-		log.Println("applying", *p.Seqn, msg_Cmd_name[int32(*p.Cmd)])
+		log.Println("applying", *p.msg.Seqn, Msg_Cmd_name[int32(*p.msg.Cmd)])
 		heap.Push(ps, p)
 		n++
 	}

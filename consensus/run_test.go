@@ -14,10 +14,10 @@ const (
 )
 
 type msgSlot struct {
-	*msg
+	msg *Msg
 }
 
-func (ms msgSlot) Put(m *msg) {
+func (ms msgSlot) Put(m *Msg) {
 	*ms.msg = *m
 }
 
@@ -39,12 +39,11 @@ func TestRunVoteDelivered(t *testing.T) {
 	r.l.init(1, 1)
 
 	p := packet{
-		msg: msg{
+		msg: Msg{
 			Seqn:  proto.Int64(1),
 			Cmd:   vote,
 			Vrnd:  proto.Int64(1),
-			Value: []byte("foo"),
-		},
+			Value: []byte("foo")},
 		Addr: &net.UDPAddr{net.IP{1, 2, 3, 4}, 5},
 	}
 
@@ -69,7 +68,7 @@ func TestRunProposeDelivered(t *testing.T) {
 	r.out = make(chan Packet, 100)
 	r.ops = make(chan store.Op, 100)
 
-	r.update(&packet{msg: msg{Cmd: propose}}, -1, new(triggers))
+	r.update(&packet{msg: Msg{Cmd: propose}}, -1, new(triggers))
 	assert.Equal(t, true, r.c.begun)
 }
 
@@ -82,12 +81,11 @@ func TestRunSendsCoordPacket(t *testing.T) {
 	r.out = c
 	r.addr = []*net.UDPAddr{x, y}
 
-	var got msg
-	exp := msg{
+	var got Msg
+	exp := Msg{
 		Seqn: proto.Int64(0),
 		Cmd:  invite,
-		Crnd: proto.Int64(1),
-	}
+		Crnd: proto.Int64(1)}
 
 	r.update(&packet{msg: *newPropose("foo")}, -1, new(triggers))
 	<-c
@@ -117,8 +115,8 @@ func TestRunSendsAcceptorPacket(t *testing.T) {
 	r.out = c
 	r.addr = []*net.UDPAddr{x, y}
 
-	var got msg
-	exp := msg{
+	var got Msg
+	exp := Msg{
 		Seqn:  proto.Int64(0),
 		Cmd:   rsvp,
 		Crnd:  proto.Int64(1),
@@ -142,12 +140,11 @@ func TestRunSendsLearnerPacket(t *testing.T) {
 	r.addr = []*net.UDPAddr{nil, nil}
 	r.l.init(1, 1)
 
-	var got msg
-	exp := msg{
+	var got Msg
+	exp := Msg{
 		Seqn:  proto.Int64(0),
 		Cmd:   learn,
-		Value: []byte("foo"),
-	}
+		Value: []byte("foo")}
 
 	r.update(&packet{msg: *newVote(1, "foo")}, 0, new(triggers))
 	assert.Equal(t, 2, len(c))
@@ -182,17 +179,16 @@ func TestRunBroadcastThree(t *testing.T) {
 	r.broadcast(newInvite(1))
 	c <- Packet{}
 
-	exp := msg{
+	exp := Msg{
 		Seqn: proto.Int64(1),
 		Cmd:  invite,
-		Crnd: proto.Int64(1),
-	}
+		Crnd: proto.Int64(1)}
 
 	addr := make([]*net.UDPAddr, len(r.addr))
 	for i := 0; i < len(r.addr); i++ {
 		p := <-c
 		addr[i] = p.Addr
-		var got msg
+		var got Msg
 		err := proto.Unmarshal(p.Data, &got)
 		assert.Equal(t, nil, err)
 		assert.Equal(t, exp, got)
@@ -218,17 +214,16 @@ func TestRunBroadcastFive(t *testing.T) {
 	r.broadcast(newInvite(1))
 	c <- Packet{}
 
-	exp := msg{
+	exp := Msg{
 		Seqn: proto.Int64(1),
 		Cmd:  invite,
-		Crnd: proto.Int64(1),
-	}
+		Crnd: proto.Int64(1)}
 
 	addr := make([]*net.UDPAddr, len(r.addr))
 	for i := 0; i < len(r.addr); i++ {
 		p := <-c
 		addr[i] = p.Addr
-		var got msg
+		var got Msg
 		err := proto.Unmarshal(p.Data, &got)
 		assert.Equal(t, nil, err)
 		assert.Equal(t, exp, got)
@@ -270,11 +265,10 @@ func TestRunReturnTrueIfLearned(t *testing.T) {
 	r.out = make(chan Packet, 100)
 	r.ops = make(chan store.Op, 100)
 
-	p := packet{msg: msg{
+	p := packet{msg: Msg{
 		Seqn:  proto.Int64(1),
 		Cmd:   learn,
-		Value: []byte("foo"),
-	}}
+		Value: []byte("foo")}}
 
 	r.update(&p, 0, new(triggers))
 	assert.T(t, r.l.done)
@@ -285,11 +279,10 @@ func TestRunReturnFalseIfNotLearned(t *testing.T) {
 	r.out = make(chan Packet, 100)
 	r.ops = make(chan store.Op, 100)
 
-	p := packet{msg: msg{
+	p := packet{msg: Msg{
 		Seqn:  proto.Int64(1),
 		Cmd:   invite,
-		Value: []byte("foo"),
-	}}
+		Value: []byte("foo")}}
 
 	r.update(&p, 0, new(triggers))
 	assert.T(t, !r.l.done)

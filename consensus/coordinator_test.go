@@ -14,27 +14,27 @@ func TestCoordIgnoreOldMessages(t *testing.T) {
 	co.update(&packet{msg: *msgTick}, -1) // force the start of a new round
 
 	got, tick := co.update(newRsvpFrom(0, 1, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 
 	got, tick = co.update(newRsvpFrom(1, 1, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 
 	got, tick = co.update(newRsvpFrom(2, 1, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 
 	got, tick = co.update(newRsvpFrom(3, 1, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 
 	got, tick = co.update(newRsvpFrom(4, 1, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 
 	got, tick = co.update(newRsvpFrom(5, 1, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 }
 
@@ -56,23 +56,23 @@ func TestCoordQuorum(t *testing.T) {
 	co.update(&packet{msg: *newPropose("foo")}, -1)
 
 	got, tick := co.update(newRsvpFrom(1, 1, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 
 	got, tick = co.update(newRsvpFrom(2, 1, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 
 	got, tick = co.update(newRsvpFrom(3, 1, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 
 	got, tick = co.update(newRsvpFrom(4, 1, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 
 	got, tick = co.update(newRsvpFrom(5, 1, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 }
 
@@ -86,27 +86,27 @@ func TestCoordDuplicateRsvp(t *testing.T) {
 	co.update(&packet{msg: *newPropose("foo")}, -1)
 
 	got, tick := co.update(newRsvpFrom(1, 1, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 
 	got, tick = co.update(newRsvpFrom(2, 1, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 
 	got, tick = co.update(newRsvpFrom(3, 1, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 
 	got, tick = co.update(newRsvpFrom(4, 1, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 
 	got, tick = co.update(newRsvpFrom(5, 1, 0, "")) // from 5
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 
 	got, tick = co.update(newRsvpFrom(5, 1, 0, "")) // from 5
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 }
 
@@ -136,12 +136,12 @@ func TestCoordRetry(t *testing.T) {
 
 	// message from a future round and another proposer
 	got, tick := co.update(newRsvpFrom(1, 2, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 
 	// second message from a future round and another proposer
 	got, tick = co.update(newRsvpFrom(1, 2, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 
 	got, tick = co.update(&packet{msg: *msgTick}, -1) // force the start of a new round
@@ -178,23 +178,23 @@ func TestCoordOneNominationPerRound(t *testing.T) {
 	co.update(&packet{msg: *newPropose("foo")}, -1)
 
 	got, tick := co.update(newRsvpFrom(0, 1, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 
 	got, tick = co.update(newRsvpFrom(1, 1, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 
 	got, tick = co.update(newRsvpFrom(2, 1, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 
 	got, tick = co.update(newRsvpFrom(3, 1, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 
 	got, tick = co.update(newRsvpFrom(4, 1, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 
 	got, tick = co.update(newRsvpFrom(5, 1, 0, ""))
@@ -202,7 +202,7 @@ func TestCoordOneNominationPerRound(t *testing.T) {
 	assert.Equal(t, false, tick)
 
 	got, tick = co.update(newRsvpFrom(6, 1, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 }
 
@@ -225,23 +225,23 @@ func TestCoordEachRoundResetsCval(t *testing.T) {
 	co.update(&packet{msg: *msgTick}, -1) // force the start of a new round
 
 	got, tick := co.update(newRsvpFrom(0, 11, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 
 	got, tick = co.update(newRsvpFrom(1, 11, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 
 	got, tick = co.update(newRsvpFrom(2, 11, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 
 	got, tick = co.update(newRsvpFrom(3, 11, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 
 	got, tick = co.update(newRsvpFrom(4, 11, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 
 	got, tick = co.update(newRsvpFrom(5, 11, 0, ""))
@@ -256,7 +256,7 @@ func TestCoordStartRsvp(t *testing.T) {
 	}
 
 	got, tick := co.update(newRsvpFrom(0, 1, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 
 	got, tick = co.update(&packet{msg: *newPropose("foo")}, -1)
@@ -277,27 +277,27 @@ func TestCoordDuel(t *testing.T) {
 	co.update(&packet{msg: *newPropose("foo")}, -1)
 
 	got, tick := co.update(newRsvpFrom(1, 1, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 
 	got, tick = co.update(newRsvpFrom(2, 2, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 
 	got, tick = co.update(newRsvpFrom(3, 2, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 
 	got, tick = co.update(newRsvpFrom(4, 2, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 
 	got, tick = co.update(newRsvpFrom(5, 2, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 
 	got, tick = co.update(newRsvpFrom(6, 2, 0, ""))
-	assert.Equal(t, (*msg)(nil), got)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 }
 
@@ -305,14 +305,14 @@ func TestCoordinatorIgnoresBadMessages(t *testing.T) {
 	co := coordinator{begun: true}
 
 	// missing Crnd
-	got, tick := co.update(&packet{msg: msg{Cmd: rsvp, Vrnd: new(int64)}}, -1)
-	assert.Equal(t, (*msg)(nil), got)
+	got, tick := co.update(&packet{msg: Msg{Cmd: rsvp, Vrnd: new(int64)}}, -1)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 	assert.Equal(t, coordinator{begun: true}, co)
 
 	// missing Vrnd
-	got, tick = co.update(&packet{msg: msg{Cmd: rsvp, Crnd: new(int64)}}, -1)
-	assert.Equal(t, (*msg)(nil), got)
+	got, tick = co.update(&packet{msg: Msg{Cmd: rsvp, Crnd: new(int64)}}, -1)
+	assert.Equal(t, (*Msg)(nil), got)
 	assert.Equal(t, false, tick)
 	assert.Equal(t, coordinator{begun: true}, co)
 }

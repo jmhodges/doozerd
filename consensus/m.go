@@ -1,18 +1,18 @@
 package consensus
 
 var (
-	nop      = newMsg_Cmd(msg_NOP)
-	invite   = newMsg_Cmd(msg_INVITE)
-	rsvp     = newMsg_Cmd(msg_RSVP)
-	nominate = newMsg_Cmd(msg_NOMINATE)
-	vote     = newMsg_Cmd(msg_VOTE)
-	tick     = newMsg_Cmd(msg_TICK)
-	propose  = newMsg_Cmd(msg_PROPOSE)
-	learn    = newMsg_Cmd(msg_LEARN)
+	nop      = Msg_NOP.Enum()
+	invite   = Msg_INVITE.Enum()
+	rsvp     = Msg_RSVP.Enum()
+	nominate = Msg_NOMINATE.Enum()
+	vote     = Msg_VOTE.Enum()
+	tick     = Msg_TICK.Enum()
+	propose  = Msg_PROPOSE.Enum()
+	learn    = Msg_LEARN.Enum()
 )
 
 const nmsg = 8
 
 var (
-	msgTick = &msg{Cmd: tick}
+	msgTick = &Msg{Cmd: tick}
 )

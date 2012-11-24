@@ -34,7 +34,7 @@ func (r *run) quorum() int {
 }
 
 func (r *run) update(p *packet, from int, ticks heap.Interface) {
-	if p.msg.Cmd != nil && *p.msg.Cmd == msg_TICK {
+	if p.msg.Cmd != nil && *p.msg.Cmd == Msg_TICK {
 		log.Printf("tick wasteful=%v", r.l.done)
 	}
 
@@ -59,7 +59,7 @@ func (r *run) update(p *packet, from int, ticks heap.Interface) {
 	}
 }
 
-func (r *run) broadcast(m *msg) {
+func (r *run) broadcast(m *Msg) {
 	if m != nil {
 		m.Seqn = &r.seqn
 		b, _ := proto.Marshal(m)
